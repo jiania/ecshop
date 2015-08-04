@@ -1,0 +1,27 @@
+---------------------------------------------
+文件：help.lbi
+描述：[首页：网店帮助]设置文章标题的显示长度。
+详细信息：将原来的:<li><a href="{$item.url}">{$item.title}</a></li>
+改为：
+<li><a href="{$item.url}" title="{$item.title|escape:html}">{$item.short_title}</a></li>
+ 
+---------------------------------------------
+文件：new_article.lbi
+描述：[首页：站内快讯]设置文章标题的显示长度。
+详细信息：将原来的:<A href="{$article.url}">{$article.title}</A>
+改为：
+<A href="{$article.url}" title="{$article.title|escape:html}">{$article.short_title}</A>
+ 
+---------------------------------------------
+文件：article_list.lbi
+描述：[分类文章列表]设置文章标题的显示长度。
+详细信息：将原来的:<a href="{$article.url}">{$article.title}</a>
+改为：
+<a href="{$article.url}" title="{$article.title|escape:html}">{$article.shor_title}</a>
+
+---------------------------------------------
+文件：articles.lbi
+描述：[文章列表]设置文章标题的显示长度。
+详细信息：将原来的:<a href="{$article.url}">{$article.title}</a>
+改为：
+<a href="{$article.url}" title="{$article.title|escape:html}">{$article.short_title}</a>

@@ -1,0 +1,787 @@
+v2.2.0 模板修改记录
+===============================================================================
+文件： category.dwt
+日期： 2007-5-24
+描述： 分类页面增加自定义样式表
+
+第13行增加：
+<!-- {if $cat_style} -->
+<link href="{$cat_style}" rel="stylesheet" type="text/css" />
+<!-- {/if} -->
+-------------------------------------------------------------------------------
+文件： goods.dwt
+日期： 2007-5-30
+描述： 改变可选属性的以及购买收藏按钮的位置，另外对配件部分也做了调整。修改比较
+多，具体请参考default/goods.dwt
+-------------------------------------------------------------------------------
+文件： style.css
+日期： 2007-6-7
+描述： 模板信息中增加logo的文件名，具体格式请参考default/style.css
+-------------------------------------------------------------------------------
+文件：user_transaction.dwt
+日期：2007-6-12
+描述：修改用户中心帐户余额，把原来的帐户明细查询分开为充值和提现申请查询和帐户明细查询
+-------------------------------------------------------------------------------
+文件：snatch.dwt
+日期：2007-6-18
+描述：夺宝骑兵页面部分变量更名
+详细描述：
+
+原来模板中以下部分：
+<div class="content-div">{$goods.snatch_time}<br />
+            {$lang.price_extent}{$goods.min_price} - {$goods.max_price} <br />
+            {$lang.user_to_use_up}{$goods.integral} {$points_name}<br />
+            {$lang.snatch_victory_desc}<br />
+            <!--{if $goods.price neq 0}-->
+            {$lang.price_less_victory}{$goods.price}，{$lang.price_than_victory}{$goods.price}，{$lang.or_can}{$goods.price}{$lang.shopping_product}。
+            <!--{else}-->
+            {$lang.victory_price_product}
+            <!--{/if}-->
+          </div>
+修改为：
+          <div class="content-div">{$goods.snatch_time}<br />
+            {$lang.price_extent}{$goods.formated_start_price} - {$goods.formated_end_price} <br />
+            {$lang.user_to_use_up}{$goods.cost_points} {$points_name}<br />
+            {$lang.snatch_victory_desc}<br />
+            <!--{if $goods.max_price neq 0}-->
+            {$lang.price_less_victory}{$goods.formated_max_price}，{$lang.price_than_victory}{$goods.formated_max_price}，{$lang.or_can}{$goods.formated_max_price}{$lang.shopping_product}。
+            <!--{else}-->
+            {$lang.victory_price_product}
+            <!--{/if}-->
+          </div>
+------------------------------------------------------------------------------
+文件：catalog.dwt
+日期：2007-6-18
+描述：去掉底级分类的概念，模板中的is_leaf改为has_children。
+
+
+第88行
+              {if $cat.is_leaf and $cat.level gt 0}float:left;{else}clear:both;font-weight:bold;padding-top: 10px;{/if}
+改为：
+              {if $cat.has_children eq 0}float:left;padding-left: 1em;{else}clear:both;font-weight:bold;padding-top: 10px;{/if}
+-------------------------------------------------------------------------------
+文件：search.dwt
+日期：2007－6－18
+描述：加入搜索商品简介的功能以及关键字的使用说明
+
+修改了 115 行起
+
+              <tr>
+                <td valign="top">{$lang.keywords}:</td>
+                <td>
+                  <input name="keywords" id="keywords" type="text" size="40" maxlength="120" value="{$adv_val.keywords}" />
+                  <input type="checkbox" name="sc_ds" value="1" {$scck} />{$lang.sc_ds}
+                  <br />{$lang.searchkeywords_notice}
+                </td>
+              </tr>
+
+描述：加入允许隐藏脱销商品的选项
+
+第 181 行加入：
+
+              <!-- {if $use_storage eq 1} -->
+              <tr>
+                <td>&nbsp;</td>
+                <td><label for="outstock"><input type="checkbox" name="outstock" value="1" id="outstock" /> {$lang.hidden_outstock}</label>
+                </td>
+              </tr>
+              <!--{/if}-->
+
+-------------------------------------------------------------------------------------
+新增加库文件： article_category_tree.lbi
+日期： 2007-6-19
+描述： 文章分类书库文件
+文件内容如下：
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div class="title-div"><img src="../images/article_category.gif" alt="Category" width="158" height="39" /></div>
+<div id="cat-div" style="padding:5px 10px;">
+  <ul>
+    <!--{foreach from=$article_categories item=cat}-->
+    <li> <span class="parent-cat"><A href="{$cat.url}">{$cat.name|escape:html}</A></span><br />
+      <!--{foreach from=$cat.children item=child}-->
+      <span style="white-space:nowrap;"><A href="{$child.url}">{$child.name|escape:html}</A></span>
+      <!--{/foreach}-->
+    </li>
+    <!--{/foreach}-->
+  </ul>
+</div>
+
+------------------------------------------------------------------------------------------
+文件： article_cat.dwt
+日期： 2007-6-19
+描述： 在文章分类页面加入文章分类树库文件
+详细描述：
+
+在用户登录库文件下加入文章分类树库文件
+-------------------------------------------------------------------------------
+文件：user_passport.dwt
+日期：2007-6-20
+描述：添加密码强度检测控件
+-------------------------------------------------------------------------------
+文件： member_info.lbi
+日期： 2007-6-20
+描述： 增加验证码功能
+详细：
+
+在登录框输入密码那一行下面加入
+<!-- 判断是否启用验证码{if $enabled_captcha} -->
+<tr>
+<td nowrap>{$lang.comment_captcha}</td>
+<td colspan="2"><input type="text" size="5" name="captcha" class="textbox-light" /></td>
+</tr>
+<tr>
+<td nowrap>&nbsp;</td>
+<td colspan="2"><img src="captcha.php?{$rand}" alt="captcha" style="vertical-align: middle;cursor: pointer;" onClick="this.src='captcha.php?'+Math.random()" /></td>
+</tr>
+<!--{/if}-->
+其中js函数signIn 修改为以下样子
+function signIn()
+{
+  var frm = document.forms['ECS_LOGINFORM'];
+
+  if (frm)
+  {
+    var username = frm.elements['username'].value;
+    var password = frm.elements['password'].value;
+    var captcha = '';
+    if (frm.elements['captcha'])
+    {
+      captcha = frm.elements['captcha'].value;
+    }
+
+    if (username.length == 0 || password.length == 0)
+    {
+{/literal}
+       alert("{$lang.empty_username_password}");
+{literal}
+        return;
+    }
+    else
+    {
+       Ajax.call('user.php?act=signin', 'username=' + username + '&password=' + encodeURIComponent(password) + '&captcha=' + captcha, signinResponse, "POST", "TEXT");
+    }
+  }
+  else
+  {
+    alert('Template error!');
+  }
+}
+
+-------------------------------------------------------------------------------
+文件：user_passport.dwt
+日期：2006-6-20
+描述：登录注册添加验证码
+
+在登录和注册两边模块下面加入以下代码
+  <!-- 判断是否启用验证码{if $enabled_captcha} -->
+  <tr>
+    <td align="right"><strong>{$lang.comment_captcha}:</strong></td>
+    <td><input type="text" size="8" name="captcha" />
+    <img src="captcha.php?{$rand}" alt="captcha" style="vertical-align: middle;cursor: pointer;" onClick="this.src='captcha.php?'+Math.random()" /> </td>
+  </tr>
+  <!--{/if}-->
+
+-------------------------------------------------------------------------------
+文件：flow.dwt
+日期：2006-6-20
+描述：登录注册添加验证码
+在登录部分加入以下代码：
+<!-- 判断是否启用验证码{if $enabled_login_captcha} -->
+<tr>
+  <td><div align="right"><strong>{$lang.comment_captcha}:</strong></div></td>
+  <td><input type="text" size="8" name="captcha" />
+  <img src="captcha.php?{$rand}" alt="captcha" style="vertical-align: middle;cursor: pointer;" onClick="this.src='captcha.php?'+Math.random()" /> </td>
+</tr>
+<!--{/if}-->
+注册部分加入以下代码：
+<!-- 判断是否启用验证码{if $enabled_register_captcha} -->
+<tr>
+  <td><div align="right"><strong>{$lang.comment_captcha}:</strong></div></td>
+  <td><input type="text" size="8" name="captcha" />
+  <img src="captcha.php?{$rand}" alt="captcha" style="vertical-align: middle;cursor: pointer;" onClick="this.src='captcha.php?'+Math.random()" /> </td>
+</tr>
+<!--{/if}-->
+-------------------------------------------------------------------------------
+文件： auction.dwt, auction_list.dwt, auction.lbi
+日期： 2007-6-20
+描述： 拍卖前台新增页面
+问题： 有几个图片需要制作 bid_log.gif （出价记录）auction.gif （拍卖商品）
+-------------------------------------------------------------------------------
+文件： index.dwt
+日期： 2007-6-20
+描述： 插入库 auction.lbi
+-------------------------------------------------------------------------------
+文件：user_clips.dwt
+日期：2006-6-21
+描述：增加js生成向导
+收藏列表处增加
+<div class="title-div"><img src="images/my_collection.gif" width="158" height="39"  alt="{$lang.collect_goods}"/></div>
+<form name="theForm" method="post" action="">
+  <table>
+    <tr>
+      <td class="label">{$lang.label_need_image}</td>
+      <td>        <label>
+        <select name="need_image" id="need_image">
+          <option value="true" selected>{$lang.need}</option>
+          <option value="false">{$lang.need_not}</option>
+        </select>
+      </label></td>
+    </tr>
+    <tr>
+      <td class="label">{$lang.label_goods_num}</td>
+      <td><input name="goods_num" type="text" id="goods_num" value="6" /></td>
+    </tr>
+    <tr>
+      <td class="label">{$lang.label_arrange}</td>
+      <td><select name="arrange" id="arrange">
+        <option value="h" selected>{$lang.horizontal}</option>
+        <option value="v">{$lang.verticle}</option>
+      </select></td>
+    </tr>
+    <tr>
+      <td class="label">{$lang.label_charset}</td>
+      <td><select name="charset" id="charset">
+        {html_options options=$lang_list}
+      </select></td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><input type="button" name="gen_code" value="{$lang.generate}" onclick="genCode()" />        </td>
+      </tr>
+    <tr>
+      <td colspan="2" align="center"><textarea name="code" cols="80" rows="5" id="code"></textarea></td>
+      </tr>
+  </table>
+</form>
+<script language="JavaScript">
+    var elements = document.forms['theForm'].elements;
+    var url = '{$url}';
+    var u   = '{$user_id}';
+    /**
+     * 生成代码
+     */
+    function genCode()
+    {
+        // 检查输入
+        if (isNaN(parseInt(elements['goods_num'].value)))
+        {
+            alert('{$lang.goods_num_must_be_int}');
+            return;
+        }
+        if (elements['goods_num'].value < 1)
+        {
+            alert('{$lang.goods_num_must_over_0}');
+            return;
+        }
+
+        // 生成代码
+        var code = '\<script src=\"' + url + 'goods_script.php?type=collection&';
+        code += 'need_image=' + elements['need_image'].value + '&';
+        code += 'goods_num=' + elements['goods_num'].value + '&';
+        code += 'arrange=' + elements['arrange'].value + '&';
+        code += 'charset=' + elements['charset'].value + '&u=' + u;
+        code += '\"\>\</script\>';
+        elements['code'].value = code;
+        elements['code'].select();
+        if (Browser.isIE)
+        {
+            window.clipboardData.setData("Text",code);
+        }
+    }
+</script>
+-----------------------------------------------------------------------------------------
+文件：user_clips.dwt
+日期：2006-6-22
+描述：用户中心欢迎页增加用户获奖提示
+详细：
+在用户提醒栏下加入以下代码：
+<!--{foreach from=$prompt item=item}-->
+<tr>
+<td style="border-bottom:1px solid #DADADA'">{$item.text}</td>
+</tr>
+<!--{/foreach}-->
+-------------------------------------------------------------------------------------------
+文件：goods.dwt
+日期：2006-6-26
+描述：增加商品点击数的显示
+详细：
+268行加入
+<tr>
+  <td>{$lang.goods_click_count}:</td>
+  <td>{$goods.click_count}</td>
+</tr>
+-------------------------------------------------------------------------------------------
+文件：user_clips.dwt
+日期：2006-6-26
+描述：添加我的评论
+详细：我的评论用户界面
+-------------------------------------------------------------------------------------------
+文件：flow.dwt
+日期：2006-6-27
+描述：save to later
+详细：<div align="center">{$cart_gift_money}。</div>下加入收藏夹信息
+-------------------------------------------------------------------------------------------
+
+文件：snatch_lib
+日期：2007-6-28
+描述：显示价格变量改为formated_变量名，将活动id在页面中赋值
+详细：
+原来：
+<td>{$lang.bid}</td>
+<td><input name="price" type="text" id="price" /></td>
+改为：
+<td>{$lang.bid}</td>
+<td><input type="hidden" name="snatch_id" value="{$id}" /><input name="price" type="text" id="price" /></td>
+
+显示获奖用户部分由原来：
+<!--{if $result}-->
+<table width="98%" border="0">
+  <tr>
+    <td>{$lang.victory_user}</td>
+    <td>{$result.user_name}</td>
+  </tr>
+  <tr>
+    <td>{$lang.price_bid}</td>
+    <td>{$result.bid_price}</td>
+  </tr>
+  <tr>
+    <td>{$lang.bid_time}</td>
+    <td>{$result.bid_time}</td>
+  </tr>
+</table>
+<!--{else}-->
+改为：
+<!--{if $result}-->
+<form name="buy" action="snatch.php" method="get">
+<table width="98%" border="0">
+  <tr>
+    <td>{$lang.victory_user}
+</td>
+    <td>{$result.user_name}
+      <input type="hidden" name="act" value="buy" />
+      <input type="hidden" name="id" value="{$id}" />
+      <!-- {if $result.order_count eq 0} -->
+      <input type="submit" name="buy" value="{$lang.button_buy}" />
+      <!--{/if}-->
+    </td>
+  </tr>
+  <tr>
+    <td>{$lang.price_bid}</td>
+    <td>{$result.formated_bid_price}</td>
+  </tr>
+  <tr>
+    <td>{$lang.bid_time}</td>
+    <td>{$result.bid_time}</td>
+  </tr>
+</table>
+</form>
+<!--{else}-->
+
+------------------------------------------------------------------------------------
+文件：snatch.dwt
+日期：2007-06-28
+描述：显示价格变量改为formated_变量名，将活动id在页面中赋值
+将$goods.shop_price和$goods.market_price改为$goods.formated_shop_price，$goods.formated_market_price
+结尾的javascript改为
+<script type="text/javascript">
+var gmt_end_time = {$goods.gmt_end_time|default:0};
+var id = {$id};
+{foreach from=$lang.snatch_js item=item key=key}
+var {$key} = "{$item}";
+{/foreach}
+{foreach from=$lang.goods_js item=item key=key}
+var {$key} = "{$item}";
+{/foreach}
+<!-- {literal} -->
+
+onload = function()
+{
+  try
+  {
+    window.setInterval("newPrice(" + id + ")", 8000);
+    onload_leftTime();
+  }
+  catch (e)
+  {}
+}
+<!-- {/literal} -->
+</script>
+
+------------------------------------------------------------------------------------------
+文件： user_clips.dwt
+日期： 2007-06-29
+描述： 当用没有通过邮件验证时，提示用户
+详细：
+
+在用户中心欢迎页面加入以下代码：
+{if $info.is_validate eq 0}
+<div style="color:red;font-size:12px;">{$lang.not_validated} <a href="javascript:sendHashMail()">{$lang.resend_hash_mail}</a></div>
+{/if}
+------------------------------------------------------------------------------------------
+文件： user_transaction.dwt
+日期： 2007-07-02
+描述： 在订单详情页里加入了查看商家的留言链接
+详细：
+user_transaction.dwt 订单详情页 订单编号 后 加入
+<a href="user.php?act=message_list&order_id={$order.order_id}">[{$lang.business_message}]</a>
+------------------------------------------------------------------------------------------
+文件： goods.dwt
+日期： 2007-07-03
+描述： 添加显示相关商品总数，添加快捷购买地址
+详细：
+        <tr>
+                  <td>{$lang.related_goods_total}:</td>
+                  <td>{$related_goods_total}</td>
+                </tr>
+ <tr>
+                  <td>购买地址</td>
+                  <td><input name="buy_url" value="{$buy_url}" size="40"/></td>
+                </tr>
+
+------------------------------------------------------------------------------------------------
+文件： user_transaction.dwt
+日期： 2007-07-04
+描述： 用户订单详情虚拟卡显示模板
+详细：
+在订单详情页面最后加上：
+<!--{if $virtual_card}-->
+<!--{foreach from=$virtual_card item=vgoods}-->
+<!--{foreach from=$vgoods.info item=card}-->
+  <tr>
+  <td>{$vgoods.goods_name}</td>
+  <td colspan="3">
+  <!--{if $card.card_sn}--><strong>{$lang.card_sn}:</strong>{$card.card_sn}<!--{/if}-->
+  <!--{if $card.card_password}--><strong>{$lang.card_password}:</strong>{$card.card_password}<!--{/if}-->
+  <!--{if $card.end_date}--><strong>{$lang.end_date}:</strong>{$card.end_date}<!--{/if}-->
+  </td>
+  </tr>
+<!--{/foreach}-->
+<!--{/foreach}-->
+<!--{/if}-->
+-----------------------------------------------------------------------------------------------------
+文件： respond.dwt
+日期： 2007-07-04
+描述： 支付返回页面虚拟卡显示模板
+<!--{if $virtual_card}-->
+<table align="center">
+<!--{foreach from=$virtual_card item=vgoods}-->
+<!--{foreach from=$vgoods.info item=card}-->
+  <tr>
+  <td>{$vgoods.goods_name}</td>
+  <td colspan="3">
+  <!--{if $card.card_sn}--><strong>{$lang.card_sn}:</strong>{$card.card_sn}<!--{/if}-->
+  <!--{if $card.card_password}--><strong>{$lang.card_password}:</strong>{$card.card_password}<!--{/if}-->
+  <!--{if $card.end_date}--><strong>{$lang.end_date}:</strong>{$card.end_date}<!--{/if}-->
+  </td>
+  </tr>
+<!--{/foreach}-->
+<!--{/foreach}-->
+</table>
+<!--{/if}-->
+------------------------------------------------------------------------------------------
+文件： user_transaction.dwt
+日期： 2007-07-05
+描述： 我的红包页面增加一列：最小订单金额(min_goods_amount)
+
+--------------------------------------------------------------------------------------------
+文件： user_transaction.dwt
+日期： 2007-07-06
+描述： 订单详情页面支付方式栏加入允许改支付方式的代码
+
+详细描述：
+订单详情页面支付方式栏下加入以下代码：
+<!--{if $payment_list}-->
+<div align="right" style="border-top: 1px dotted #DADADA">
+<form name="payment" method="post" action="user.php">
+{$lang.change_payment}:
+<select name="pay_id">
+<!--{foreach from=$payment_list item=payment}-->
+<option value="{$payment.pay_id}">
+{$payment.pay_name}({$lang.pay_fee}:{$payment.format_pay_fee})
+</option>
+<!--{/foreach}-->
+</select>
+<input type="hidden" name="act" value="act_edit_payment" />
+<input type="hidden" name="order_id" value="{$order.order_id}" />
+<input type="submit" name="Submit" value="{$lang.button_submit}" />
+</form>
+</div>
+<!--{/if}-->
+
+------------------------------------------------------------------------------------------------
+文件： flow.dwt
+时间： 2007-7-6
+描述： 订单完成页面显示虚拟卡号
+详细描述：
+在订单完成页面加入以下代码：
+<!--{if $virtual_card}-->
+<table align="center">
+<!--{foreach from=$virtual_card item=vgoods}-->
+  <!--{foreach from=$vgoods.info item=card}-->
+    <tr>
+    <td>{$vgoods.goods_name}</td>
+    <td>
+    <!--{if $card.card_sn}--><strong>{$lang.card_sn}:</strong>{$card.card_sn}<!--{/if}-->
+    <!--{if $card.card_password}--><strong>{$lang.card_password}:</strong>{$card.card_password}<!--{/if}-->
+    <!--{if $card.end_date}--><strong>{$lang.end_date}:</strong>{$card.end_date}<!--{/if}-->
+    </td>
+    </tr>
+  <!--{/foreach}-->
+<!--{/foreach}-->
+</table>
+<!--{/if}-->
+--------------------------------------------------------------------------------------------
+文件： flow.dwt
+日期： 2007-07-06
+描述： 购物过程中可以直接使用红包（输入序列号）
+--------------------------------------------------------------------------------------------
+文件： flow.dwt
+日期： 2007-07-09
+描述： 控制使用余额输入框
+原来：<td><input name="surplus" type="text" id="ECS_SURPLUS" size="10" value="{$order.surplus|default:0}" onblur="changeSurplus(this.value)" />
+改为：<td><input name="surplus" type="text" id="ECS_SURPLUS" size="10" value="{$order.surplus|default:0}" onblur="changeSurplus(this.value)" {if $disable_surplus}disabled="disabled"{/if} />
+--------------------------------------------------------------------------------------------
+文件： user_clips.dwt
+日期： 2007-07-09
+描述： 用户中心欢迎页显示信用额度，增加以下代码
+<!-- {if $info.credit_line gt 0} 如果有信用额度 -->
+<tr>
+  <td align="right">{$lang.credit_line}</td>
+  <td style="border-bottom:1px solid #DADADA;">{$info.formated_credit_line}</td>
+</tr>
+<!-- {/if} -->
+
+------------------------------------------------------------------------------------------------
+文件： order_query.lbi
+日期： 2007-07-09
+描述： 前台订单查询库文件（新增）
+<!--{if empty($order_query)}-->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><div class="title-div"><img src="../images/order_query.gif" alt="invoice query" width="158" height="39" /></div>
+<script>var invalid_order_sn = "{$lang.invalid_order_sn}"</script>
+<form name="ecsOrderQuery">
+<input type="text" name="order_sn" /><input type="button" value="{$lang.query_order}" onclick="orderQuery()" />
+</form>
+<div class="content-div" id="ECS_ORDER_QUERY">
+<!--{else}-->
+  <table width="100%" cellpadding="2" cellspacing="0" border="0">
+    <!--{if $order_query.user_id}-->
+    <tr align="left">
+      <th width="30%" style="border-top: 1px dashed #DADADA;font-size:10px">{$lang.order_number}</th>
+      <td style="font-size:9px;border-top: 1px dashed #DADADA;"><a href="user.php?act=order_detail&order_id={$order_query.order_id}" >{$order_query.order_sn}</a></td>
+    </tr>
+    <!--{else}-->
+    <tr align="left">
+      <th width="30%" style="border-top: 1px dashed #DADADA;font-size:10px">{$lang.order_number}</th>
+      <td style="font-size:9px;border-top: 1px dashed #DADADA;">{$order_query.order_sn}</td>
+    </tr>
+    <!--{/if}-->
+    <tr align="left">
+      <th width="30%" style="border-top: 1px dashed #DADADA;font-size:10px">{$lang.order_status}</th>
+      <td style="font-size:9px;border-top: 1px dashed #DADADA;">{$order_query.order_status}</td>
+    </tr>
+    <!--{if $order_query.invoice_no }-->
+    <tr align="left">
+      <th width="30%" style="border-bottom: 1px dashed #DADADA;font-size:10px">{$lang.consignment}</th>
+      <td style="font-size:9px;border-bottom: 1px dashed #DADADA;">{$order_query.invoice_no}</td>
+    </tr>
+    <!--{/if}-->
+    {if $order_query.shipping_date}
+    <tr align="left">
+      <th width="30%" style="border-bottom: 1px dashed #DADADA;font-size:10px">{$lang.shipping_date}</th>
+      <td style="font-size:9px;border-bottom: 1px dashed #DADADA;">{$order_query.shipping_date}</td>
+    </tr>
+    <!--{/if}-->
+  </table>
+<!--{/if}-->
+</div>
+
+-------------------------------------------------------------------------------------------------------------------
+文件： index.dwt
+日期： 2007-07-09
+描述： 加入订单状态查询库文件
+详细描述：
+在首页左侧边栏加入库文件order_query.lbi
+--------------------------------------------------------------------------------------------
+文件： order_total.lbi
+日期： 2007-07-10
+描述： 增加发票税额
+<!-- {if $total.tax gt 0} 税 -->
++ {$lang.tax}: {$total.tax_formated}
+<!-- {/if} -->
+--------------------------------------------------------------------------------------------
+文件： flow.dwt
+日期： 2007-07-10
+描述： 增加发票类型
+<!-- {if $inv_type_list} -->
+{$lang.invoice_type}<select name="inv_type" id="ECS_INVTYPE" {if $order.need_inv neq 1}disabled="true"{/if} onchange="changeNeedInv()">
+{html_options options=$inv_type_list selected=$order.inv_type}</select>
+<!-- {/if} -->
+--------------------------------------------------------------------------------------------
+文件： user_transaction.dwt
+日期： 2007-07-10
+描述： 增加发票税额
+<!-- {if $order.tax gt 0} -->
++ {$lang.tax}: {$order.formated_tax}
+<!-- {/if} -->
+--------------------------------------------------------------------------------------------
+文件： goods.dwt
+日期： 2007-07-11
+描述： 商品详情页面显示购买该商品送积分数
+<!-- {if $goods.give_integral > 0} -->
+<tr>
+  <td>{$lang.goods_give_integral}</td>
+  <td>{$goods.give_integral} {$points_name}</td>
+</tr>
+<!-- {/if} -->
+---------------------------------------------------------------------------------------------
+文件：user_clips.dwt
+日期：2007-07-11
+描述：对订单的留言
+详细描述：
+留言删除链接由原来
+<a href="user.php?act=del_msg&amp;id={$key}">
+改为：
+<a href="user.php?act=del_msg&amp;id={$key}&amp;order_id={$message.order_id}">
+留言类型由原来：
+<tr>
+<td align="right">{$lang.message_type}</td>
+<td><input name="msg_type" type="radio" value="0" checked="checked" />
+  {$lang.type[0]}
+  <input type="radio" name="msg_type" value="1" />
+  {$lang.type[1]}
+  <input type="radio" name="msg_type" value="2" />
+  {$lang.type[2]}
+  <input type="radio" name="msg_type" value="3" />
+  {$lang.type[3]}
+  <input type="radio" name="msg_type" value="4" />
+  {$lang.type[4]} </td>
+</tr>
+改为：
+{if $order_info}
+<tr>
+<td align="right">{$lang.order_number}</td>
+<td>
+<a href ="{$order_info.url}"><img src="images/note.gif" />{$order_info.order_sn}</a>
+<input name="msg_type" type="hidden" value="5" />
+<input name="order_id" type="hidden" value="{$order_info.order_id}" />
+</td>
+</tr>
+{else}
+<tr>
+<td align="right">{$lang.message_type}</td>
+<td><input name="msg_type" type="radio" value="0" checked="checked" />
+  {$lang.type[0]}
+  <input type="radio" name="msg_type" value="1" />
+  {$lang.type[1]}
+  <input type="radio" name="msg_type" value="2" />
+  {$lang.type[2]}
+  <input type="radio" name="msg_type" value="3" />
+  {$lang.type[3]}
+  <input type="radio" name="msg_type" value="4" />
+  {$lang.type[4]} </td>
+</tr>
+{/if}
+---------------------------------------------------------------------------------------------------------
+文件： new_articles.lbi
+日期： 2007-07-18
+描述： new_articles.lib 增加显示商店公告
+详细描述：
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<div id="tab-title">
+<span id="ECS_NOTICE" class="tab-front">{$lang.shop_notice}</span>
+<span id="ECS_ARTICLE" class="tab-back">{$lang.new_article}</span>
+</div>
+<!-- 商店公告内容 -->
+<div class="content-div" id="ECS_NOTICE_BODY">
+  {$shop_notice}
+</div>
+<!-- 最新文章 -->
+<div class="content-div" id="ECS_ARTICLE_BODY" style="display:none" >
+  <ul class="article-list">
+    <!--{foreach from=$new_articles item=article}-->
+    <li>[<a href="{$article.cat_url}">{$article.cat_name}</a>] <a href="{$article.url}" title="{$article.title|escape:html}">{$article.short_title}</a></li>
+    <!--{/foreach}-->
+  </ul>
+</div>
+{literal}
+<script type="text/javascript">
+  var cycleList = ['ECS_NOTICE', 'ECS_ARTICLE'];
+  var tabFront = 'tab-front';
+  var tabBack = 'tab-back';
+  function cycleShow(obj)
+  {
+    var curObj;
+    var curBody;
+    for (i=0; i < cycleList.length; i++)
+    {
+      curObj = document.getElementById(cycleList[i]);
+      curBody = document.getElementById(cycleList[i] + '_BODY');
+      if (obj.id == curObj.id)
+      {
+        curObj.className = tabFront;
+        curBody.style.display = "";
+      }
+      else
+      {
+        curObj.className = tabBack;
+        curBody.style.display = "none";
+      }
+    }
+  }
+
+  // 添加事件
+  for (i=0; i< cycleList.length; i++)
+  {
+    document.getElementById(cycleList[i]).onmousemove = function()
+    {
+      cycleShow(this);
+    };
+  }
+</script>
+{/literal}
+---------------------------------------------------------------------------------------------------------
+文件： consignee.lbi，user_transaction.dwt
+日期： 2007-09-3
+描述： 配送地区下拉框，增加配送区域名称
+详细描述：
+<select name="country" id="selCountries_{$sn}" onchange="region.changed(this, 1, 'selProvinces_{$sn}')">
+        <option value="0">{$lang.please_select}{$name_of_region[0]}</option>
+        <!-- {foreach from=$country_list item=country} -->
+        <option value="{$country.region_id}" {if $consignee.country eq $country.region_id}selected{/if}>{$country.region_name}</option>
+        <!-- {/foreach} -->
+      </select>
+其他三个下拉框也如此
+---------------------------------------------------------------------------------------------------------
+文件： wholesale_list.dwt
+日期： 2007-09-17
+描述： 增加批发页面
+---------------------------------------------------------------------------------------------------------
+文件： message.dwt
+日期： 2007-09-25
+描述： 判断是否是自动跳转 
+详细描述 : {if $auto_redirect}
+<meta http-equiv="refresh" content="3;URL={$message.href}" />
+{/if}
+---------------------------------------------------------------------------------------------------------
+文件： flow.dwt
+日期： 2007-09-27
+描述： 购物流程登录页面增加提示信息
+{if $need_rechoose_gift}
+<tr>
+  <td colspan="2" align="center" style="border-top:1px #ccc solid; padding:5px; color:red;">{$lang.gift_remainder}</td>
+</tr>
+{/if}
+---------------------------------------------------------------------------------------------------------
+文件： goods.dwt
+日期： 2007-09-29
+描述： 商品详情页显示红包的文字
+把 <td>{$lang.bonus}</td> 改为 <td>{$lang.goods_bonus}</td>
+---------------------------------------------------------------------------------------------------------
+文件： group_buy_goods.dwt
+日期： 2007-10-26
+描述： 团购商品页文字显示错误
+把 <td><strong>{$lang.amount}:</strong></td> 改为 <td><strong>{$lang.number}:</strong></td>
+---------------------------------------------------------------------------------------------------------
+文件： user_transaction.dwt
+日期： 2007-10-31
+描述： 用户中心 - 我的红包，红包序列号加个默认值
+把 {$item.bonus_sn} 改为 {$item.bonus_sn|default:N/A}

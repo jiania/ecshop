@@ -1,0 +1,39 @@
+模板修改
+============================================================================
+文件： /library/order_view.lbi
+描述： 增加发货单号显示和店主附言
+
+详细信息：
+第5行增加
+{if $order.invoice_no}<div><div style="float:left;">{$lang.consignment}:</div>{$order.invoice_no}</div>{/if}
+{if $order.to_buyer}<div>{$lang.to_buyer}:{$order.to_buyer}</div>{/if}
+
+------------------------------------------------------------------------------
+文件： /library/tag_list.lbi
+描述： 没有标签时显示“暂时没有标签”
+
+详细信息：
+由原来：
+<!-- 标签云开始 {foreach from=$tags item=tag}-->
+<span style="margin:2px 10px; font-size:{$tag.size}px; line-height:36px;"><a href="search.php?keywords={$tag.tag_words|escape:url}" style="color:{$tag.color}">{$tag.tag_words|escape:html}</a></span>
+<!-- 标签云结束 {/foreach}-->
+改为：
+<!-- {if $tags} -->
+<!-- 标签云开始 {foreach from=$tags item=tag}-->
+<span style="margin:2px 10px; font-size:{$tag.size}px; line-height:36px;"><a href="search.php?keywords={$tag.tag_words|escape:url}" style="color:{$tag.color}">{$tag.tag_words|escape:html}</a></span>
+<!-- 标签云结束 {/foreach}-->
+<!-- {else} -->
+<span style="margin:2px 10px; font-size:14px; line-height:36px;">{$lang.no_tag}</span>
+<!-- {/if} --> 
+
+============================================================================
+文件： /library/tag_list.lbi
+描述： 增加标签删除的图片按钮
+
+详细信息：
+在<span></span>的外环加入以下几行:
+   <!-- {if $tags_from eq 'user'} -->
+	<A href="user.php?act=drop_tag&tag_words={$tag.tag_words}&uid={$tag.user_id}" title="{$lang.drop}">
+	  <img src="../images/drop.gif" alt="{$lang.drop}" />
+	</A>&nbsp;&nbsp;
+  <!-- {/if} -->

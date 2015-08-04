@@ -1,0 +1,2 @@
+团购邮件模板。如果原来ecs_mail_templates表不存在 template_code ＝ group_buy 的记录，就插入以下记录。否则跳过。以下语句是简体中文的记录。
+INSERT INTO `ecs_mail_templates` (`template_code`, `is_html`, `template_subject`, `template_content`, `last_modify`) VALUES ('group_buy', 1, '团购商品', '亲爱的{\$consignee}。您好！\n\n您于{\$order_time}在本店参加团购商品活动，所购买的商品名称为：{\$goods_name}，数量：{\$goods_number}，订单号为：{\$order_sn}，订单金额为：{\$order_amount}\n\n此团购商品现在已到结束日期，并达到最低价格，您现在可以对该订单付款。\n\n请点击下面的链接：\n\n<a href={\$shop_url} target=_blank>{\$shop_url}</a>\n\n请尽快登录到用户中心，查看您的订单详情信息。 \n\n{\$shop_name}\n\n{\$send_date}',1162201031 );

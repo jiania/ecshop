@@ -1,0 +1,159 @@
+
+-- 订单表增加“积分支付金额”字段
+
+ALTER TABLE `ecs_order_info` ADD `integral_money` DECIMAL( 10, 2 ) NOT NULL AFTER `integral` ;
+
+-- 增加“商品关联文章”表
+
+CREATE TABLE `ecs_goods_article` (
+`goods_id` MEDIUMINT UNSIGNED NOT NULL ,
+`article_id` MEDIUMINT UNSIGNED NOT NULL ,
+PRIMARY KEY ( `goods_id` , `article_id` )
+);
+
+-- 文章表增加“文件下载地址”字段
+ALTER TABLE `ecs_article` ADD `file_url` VARCHAR( 255 ) NOT NULL ;
+
+-- 文章内容字段加大
+ALTER TABLE `ecs_article` CHANGE `content` `content` MEDIUMTEXT NOT NULL;
+
+-- 文章分类增加是否显示在导航栏的选项
+ALTER TABLE `ecs_article_cat` DROP `is_open`;
+ALTER TABLE `ecs_article_cat` ADD `show_in_nav` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0';
+
+
+-- 商品标增加最后更新为索引
+ALTER TABLE `ecs_goods` ADD INDEX ( `last_update` ) ;
+
+-- 商品表增加轮播图片的字段
+ALTER TABLE `ecs_goods` ADD `cycle_img` VARCHAR( 255 ) NOT NULL ;
+ALTER TABLE `ecs_goods` ADD INDEX ( `cycle_img` (1)) ;
+
+-- 增加插件信息表
+CREATE TABLE `ecs_plugins` (
+`code` VARCHAR( 30 ) NOT NULL ,
+`version` VARCHAR( 10 ) NOT NULL ,
+`library` VARCHAR( 255 ) NOT NULL ,
+`assign` TINYINT( 1 ) UNSIGNED NOT NULL ,
+`install_date` INT( 11 ) UNSIGNED NOT NULL ,
+PRIMARY KEY ( `code` )
+);
+
+-- 商店设置 value 字段修改为 text 类型
+ALTER TABLE `ecs_shop_config` CHANGE `value` `value` TEXT NOT NULL ;
+INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_range` , `store_dir` , `value` )
+VALUES (
+'68', '3', 'goods_name_length', 'text', '', '', '0'
+), (
+'69', '3', 'price_format', 'select', '0,1,2,3,4,5', '', '0'
+);
+
+-- 商店设置
+UPDATE `ecs_shop_config` SET `store_range` = '0,1,2,3,4,5' WHERE `id` =35 LIMIT 1 ;
+
+-- 增加商店设置的选项
+INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`) VALUES 
+(26, 1, 'shop_logo ', 'file', '', '../images/', ''),
+(45, 2, 'no_picture', 'file', '', '../images/', ''),
+(46, 2, 'enable_captcha', 'select', '0,1', '', '0'),
+(47, 2, 'comment_captcha', 'select', '0,1', '', '0'),
+(48, 2, 'stats_code', 'textarea', '', '', ''),
+(49, 2, 'cache_time', 'text', '', '', '3600'),
+(50, 2, 'register_points', 'text', '', '', '0'),
+(201, 2, 'enable_gzip', 'select', '0,1', '', '0');
+
+-- 对属性值增加是否可以检索的条件
+ALTER TABLE `ecs_attribute` ADD `attr_index` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `attr_values` ;
+
+-- 属性值是否允许关联
+ALTER TABLE `ecs_attribute` ADD `is_linked` TINYINT( 1 ) NOT NULL DEFAULT '0';
+
+--ALTER TABLE `ecs_attribute` ADD INDEX ( `is_linked` ) ;
+
+-- 修改商品更新日期字段
+ALTER TABLE `ecs_goods` ADD `last_update` INT( 11 ) NOT NULL DEFAULT '0' AFTER `bonus_type_id` ;
+
+--增加订单类型的字段落--
+ALTER TABLE `ecs_order_info` ADD `extension_code` VARCHAR( 20 ) NOT NULL ,
+ADD `extension_id` MEDIUMINT( 8 ) UNSIGNED NOT NULL DEFAULT '0';
+
+ALTER TABLE `ecs_order_info` ADD INDEX ( `extension_code` , `extension_id` ) ;
+
+-- --------------------------------------------------------
+
+-- 
+-- 表的结构 `ecs_tag`
+-- 
+
+DROP TABLE IF EXISTS `ecs_tag`;
+CREATE TABLE `ecs_tag` (
+`tag_id` MEDIUMINT( 8 ) NOT NULL AUTO_INCREMENT,
+`user_id` MEDIUMINT( 8 ) NOT NULL ,
+`goods_id` MEDIUMINT( 8 ) NOT NULL ,
+`tag_words` VARCHAR( 255 ) NOT NULL ,
+PRIMARY KEY ( `tag_id` ) ,
+INDEX ( `user_id` , `goods_id` )
+) TYPE = MYISAM ;
+
+-- 文章表增加字段：打开类型（0 显示内容 1 下载文件 2 既显示内容又显示文件）
+ALTER TABLE `ecs_article` ADD `open_type` TINYINT UNSIGNED NOT NULL ;
+
+
+ALTER TABLE `ecs_article` CHANGE `content` `content` LONGTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ;
+
+-- 修改邮件模板：发货通知
+UPDATE `ecs_mail_templates` SET `template_content` = ' 亲爱的{$order.consignee}。你好！\\n\\n您的订单{$order.order_sn}已于{$send_time}按照您预定的配送方式给您发货了。\\n\\n{if $order.invoice_no}发货单号是{$order.invoice_no}。{/if}\\n\\n在您收到货物之后请点击下面的链接确认您已经收到货物：\\n{$confirm_url}\\n\\n再次感谢您对我们的支持。欢迎您的再次光临。 \\n\\n{$shop_name}\\n{$send_date}' WHERE `template_code` = 'deliver_notice' LIMIT 1 ;
+
+-- 商品表增加字段：商家备注 seller_note
+ALTER TABLE `ecs_goods` ADD `seller_note` VARCHAR( 255 ) NOT NULL ;
+
+-- 商店设置表增加是否使用余额
+INSERT INTO `ecs_shop_config` (`id`, `parent_id`, `code`, `type`, `store_range`, `store_dir`, `value`) VALUES (74, 4, 'use_surplus', 'select', '1,0', '', '1');
+
+-- 订单表增加字段：商家给用户看的信息 
+ALTER TABLE `ecs_order_info` ADD `to_buyer` VARCHAR( 255 ) NOT NULL ;
+
+-- 增加是否允许匿名购物的开关
+ INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_range` , `store_dir` , `value` )
+VALUES (
+127, '4', 'anonymous_buy', 'select', '1,0', '', '1'
+) 
+
+--增加站外投放统计表(站外广告点击,来源, 商品站外调用的点击,来源)
+CREATE TABLE `ecs_adsense` (
+`from_ad` SMALLINT( 6 ) NOT NULL DEFAULT '-1',
+`referer` VARCHAR( 255 ) NOT NULL ,
+`clicks` INT( 10 ) NOT NULL DEFAULT '0',
+PRIMARY KEY ( `from_ad` , `referer` ) 
+) ENGINE = MYISAM ;
+
+
+-- 商品详情页显示设置
+INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_range` , `store_dir` , `value` )
+VALUES (
+'6', '0', 'goods', 'group', '', '', ''
+);
+INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_range` , `store_dir` , `value` )
+VALUES (
+NULL , '6', 'show_goodssn', 'select', '1,0', '', '1'
+);
+INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_range` , `store_dir` , `value` )
+VALUES (
+NULL , '6', 'show_brand', 'select', '1,0', '', '1'
+);
+INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_range` , `store_dir` , `value` )
+VALUES (
+null, '6', 'show_goodsweight', 'select', '1,0', '', '1'
+);
+INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_range` , `store_dir` , `value` )
+VALUES (
+null, '6', 'show_goodsnumber', 'select', '1,0', '', '1'
+);
+INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_range` , `store_dir` , `value` )
+VALUES (
+null, '6', 'show_addtime', 'select', '1,0', '', '1'
+);
+ INSERT INTO `ecs_shop_config` ( `id` , `parent_id` , `code` , `type` , `store_range` , `store_dir` , `value` )
+VALUES (
+null, '6', 'goodsattr_style', 'select', '1,0', '', '1'
+);

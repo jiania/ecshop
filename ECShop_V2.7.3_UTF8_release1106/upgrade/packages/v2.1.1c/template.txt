@@ -1,0 +1,13 @@
+ECSHOP v2.1.2 模板修改记录
+============================================================================
+文件： /library/footer.lbi
+描述： 正确显示中文用户名的旺旺帐号的在线状态
+
+详细信息：
+第28行源代码
+    <A href="http://amos1.taobao.com/msg.ww?v=2&uid={$im}&s=2" target="_blank"><img src="http://amos1.taobao.com/online.ww?v=2&uid={$im}&s=2" width="16" height="16" border="0" alt="淘宝旺旺" /> {$im}</A>
+
+替换为
+    <A href="http://amos1.taobao.com/msg.ww?v=2&uid={$im|escape:url}&s=2" target="_blank"><img src="http://amos1.taobao.com/online.ww?v=2&uid={$im|escape:url}&s=2" width="16" height="16" border="0" alt="淘宝旺旺" /> {$im}</A>
+
+------------------------------------------------------------------------------

@@ -1,0 +1,248 @@
+文件： article_info.lbi
+描述： 修改文章详情库
+
+
+详细信息：
+把{if $article.open_type eq 2}
+替换为{if $article.open_type eq 2 or $article.open_type eq 1}
+
+
+已修改完成模板: shaobag	
+--------------------------------------------------------------------
+文件： 所有dwt文件
+描述： 将js语言赋值部分改为链接
+
+详细信息：
+模板文件开头部分出现以下内容的部分：
+<script type="text/javascript">
+<!--
+// 这里把JS用到的所有语言都赋值到这里
+{foreach from=$lang.js_languages key=key item=item}
+var {$key} = "{$item}";
+{/foreach}
+//-->
+</script>
+更改为：
+<script type="text/javascript" src="index.php?act=js_languages"></script>
+
+已修改完成模板: shaobag	
+--------------------------------------------------------------------
+文件： user_register.lbi
+描述： 将默认的生日日期设置为1980-1-1
+
+详细信息：
+
+44行:
+	<td>{html_select_date field_order="YMD" prefix="birthday"  start_year="-100" end_year="+1" display_days=true month_format="%m" day_value_format="%02d"}</td>
+
+替换为：
+	<td>{html_select_date field_order="YMD" prefix="birthday"  start_year="-100" end_year="+1" display_days=true month_format="%m" day_value_format="%02d" time='1980-01-01'}</td>
+
+
+已修改完成模板: shaobag	
+--------------------------------------------------------------------
+文件： footer.lbi
+描述： 增加skype联系方式
+
+详细信息：
+
+36行后加入：
+    <!-- Skype {foreach from=$skype item=im} -->
+    <a href="callto://{$im|escape:url}">{$im}</a>
+    <!-- {/foreach} -->
+
+已修改完成模板: shaobag	
+--------------------------------------------------------------------
+文件： search_form.lbi
+描述： 搜索表单增加分类列表框
+
+详细信息：
+    <select name="category" id="category">
+    <option value="0">{$lang.all_category}</option>
+    {$category_list}
+    </select>
+
+已修改完成模板: shaobag	
+---------------------------------------------------------------------------------
+文件：sigin.lbi
+描述：增加用户名默认值
+
+详细信息：
+文本框由
+<input name="username" type="text" class="textbox-light" size="8" tabindex="1"  />
+改为：
+<input name="username" type="text" class="textbox-light" size="8" tabindex="1"  value="{$ecs_username}"/>
+
+已修改完成模板: shaobag	
+
+---------------------------------------------------------------------------------
+文件：search_advanced.lbi
+描述：增加属性检索表单选项
+
+详细信息：
+将原来<!--{if $goods_type_list}-->.......................................<!--{/if}-->中内容替换为：
+<!--{if $goods_type}-->
+        <!--{if $goods_type_list}-->
+        <tr>
+          <td width="10%">{$lang.extension}</td>
+          <td>
+　　　<select name="goods_type" onChange="getAttr(this.value)">
+            <option value="0">{$lang.all_option}</option>
+　　　{html_options options=$goods_type_list}            
+         　</select>
+　　　</td>
+        </tr>
+　　<!--{foreach from=$goods_type item=type key=key}-->
+　　<tbody id="goods_type_{$key}" style="display: none;">
+　    <!--{foreach from=$type item=item}-->
+        <!--{if $item.type eq 1}-->
+        <tr>
+          <td width="10%">{$item.attr}:</td>
+          <td><input name="attr[{$item.id}]"  type="text" size="20" maxlength="120" /></td>
+        </tr>
+        <!--{/if}-->
+        <!--{if $item.type eq 2}-->
+        <tr>
+          <td width="10%">{$item.attr}:</td>
+          <td><input name="attr[{$item.id}][from]" type="text"  size="5" maxlength="5" />-<input name="attr[{$item.id}][to]" type="text"  maxlength="5" />
+          </td>
+        </tr>		  
+        <!--{/if}-->
+        <!--{if $item.type eq 3}-->
+        <tr>
+            <td width="10%">{$item.attr}:</td>
+            <td>
+               <select name="attr[{$item.id}]">
+               <option value="0">{$lang.all_option}</option>
+               {html_options options=$item.value}
+                </select>
+           </td>
+        </tr>		  
+        <!--{/if}-->		  
+        <!--{/foreach}-->
+        </tbody>
+        <!--{/foreach}-->
+        <!--{else}-->
+        <!--{foreach from=$goods_type item=item}-->
+        <!--{if $item.type eq 1}-->
+        <tr>
+          <td width="10%">{$item.attr}:</td>
+          <td><input name="attr[{$item.id}]"  type="text" size="20" maxlength="120" /></td>
+        </tr>
+        <!--{/if}-->
+        <!--{if $item.type eq 2}-->
+        <tr>
+            <td width="10%">{$item.attr}:</td>
+            <td><input name="attr[{$item.id}][from]" type="text"  size="5" maxlength="5" />-<input name="attr[{$item.id}][to]" type="text"  maxlength="5" /></td>
+        </tr>		  
+       <!--{/if}-->
+       <!--{if $item.type eq 3}-->
+       <tr>
+          <td width="10%">{$item.attr}:</td>
+          <td><select name="attr[{$item.id}]">
+	<option value="0">{$lang.all_option}</option>
+	{html_options options=$item.value}
+                </select>
+          </td>
+        </tr>		  
+　　<!--{/if}-->		  
+　　<!--{/foreach}-->
+　　<!--{/if}-->
+<!--{/if}-->
+
+文件：snatch.dwt
+描述：优化js包含和倒计时功能
+
+详细描述：
+页面<head></head>中js的包含部分改成以下样子。
+<script type="text/javascript" src="includes/cpaint/cpaint.js"></script>
+<script type="text/javascript" src="includes/common.js"></script>
+<script type="text/javascript" src="index.php?act=js_languages"></script>
+<script type="text/javascript" src="includes/lefttime.js"></script>
+
+页面结束位置，onload时触发倒计时功能
+由原来：
+onload = function()
+{
+	window.setInterval("newPrice()",5000);
+	bid(-1);
+}
+修改为：
+onload = function()
+{
+	window.setInterval("newPrice()",5000);
+	onload_leftTime();
+	bid(-1);
+}
+
+－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
+文件：snatch_goods.lbi
+描述：对默认倒计时加入数值
+详细信息：
+对原来
+<span class="goods-price"  id="leftTime"></span>
+改为
+<span class="goods-price" id="leftTime"><input type="hidden" value="{$end_utc_time|default:0}" /></span>
+
+－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
+文件：goods.dwt
+描述：优化倒计时功能
+详细信息：
+将头部以下部分信息删除
+<script type="text/Javascript">
+var residual_time = {$goods.residual_time|default:0};
+var day           = "{$lang.day|default:day}";
+var hour          = "{$lang.hour|default:hour}";
+var minute        = "{$lang.minute|default:minute}";
+var second        = "{$lang.second|default:second}";
+var end           = "{$lang.end|default:end}";
+</script>
+
+在页面尾部加入触发事件
+<script type="text/javascript">
+<!-- {literal} -->
+onload = function()
+{
+	onload_leftTime();
+}
+<!-- {/literal} -->
+</script>
+－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
+文件：goods_info.lbi
+描述：对默认倒计时加入数值
+详细描述：
+对原来
+<span class="goods-price"  id="leftTime"></span>
+改为
+<span class="goods-price" id="leftTime"><input type="hidden" value="{$end_utc_time|default:0}" /></span>
+
+－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
+文件：group_buy_order_detail.dwt
+描述：对“修改”链接的修改
+详细描述：将原来的：<a href="javascript:saveOrder('consignee');" style="float:right;margin:5px 10px 0 0;">
+              改为：<a href="?act=consignee" style="float:right;margin:5px 10px 0 0;">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

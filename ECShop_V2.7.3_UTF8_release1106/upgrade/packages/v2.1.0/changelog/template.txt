@@ -1,0 +1,197 @@
+团购插件所改动的前台模板:
+
+
+-------------------------------------------------------------------------------
+footer.lbi
+
+1. 几种IM的都改为循环显示
+2. 最后一行增加{$stats_code}
+
+
+---------------------------------------------------------------------------------
+虚拟卡
+order_view.lbi   在详细收货地址行添加{$order.display}
+order_detail     通过{if $total.real_goods_count neq 0}判断隐藏配送 及收货地址部分
+order_confirm    收货地址
+consignee        收货地址
+
+-------------------------------------------------------------------------------
+精品、特价、热销、新品、排行、浏览历史、品牌的商品、分类的商品
+
+这几个lbi都增加一个goods.short_name的标签。
+
+-------------------------------------------------------------------------------
+article, article_cat, category, goods, index
+
+这几个模板都增加keywords, description 的meta信息
+
+-------------------------------------------------------------------------------
+增加 tag_cloud.dwt以及tag_list.lbi
+goods.dwt增加goods_tag.lbi
+
+------------------------------------------------------------------------------------------
+增加advanced_search.dwt模板
+把原来search_result.dwt模板中advanced_search.lib去掉
+
+
+------------------------------------------------------------------------------------------
+2006-10-31
+
+首页增加轮播的flash
+
+2006-11-1
+------------------------------------------------------------------------------------------
+增加 attribute_linked.lbi
+goods.dwt增加该库项目
+
+------------------------------------------------------------------------------------------
+comments.lbi增加判断是否启用验证码的部分
+优化comments.lbi中的标签
+goods_info.lbi增加销售排行
+
+-------------------------------------------------------------------------------------------
+comments.lbi中主体部分全部copy到insert_comments.lbi中。
+insert_commets.lbi中form中增加<input type="hidden" name="enabled_captcha"  value="{$enabled_captcha}" />
+2006－11－2
+
+------------------------------------------------------------------------------------------
+2006-11-4
+
+前台模板中script的 src 属性为 admin/js/cpaint.js 的全部替换为 includes/cpaint/cpaint.js
+
+------------------------------------------------------------------------------------------
+2006-11-5
+compare.dwt 增加购买和收藏的按钮，评论级别和评论数之间增加br
+
+16:48 2006-11-5
+修改 properties.lbi 
+(1)原来是以单选按钮显示，现在根据设置以单选按钮或下拉列表显示
+(2)增加设置控制是否显示货号、品牌、重量、库存、上架时间
+(3)如果积分为0，不显示积分
+
+修改 cart_view.lbi
+(1)修改“结算中心”按钮的代码：loadFlowStep('order_detail')改为loadFlowStep('order_detail', 'cart')
+
+修改 consignee.lbi
+(1)页面改动很大，多个收货地址改为平铺展示
+
+修改 order_detail.lbi
+(1)修改“提交订单”按钮的代码：
+saveOrder('order_confirm');
+改为
+if (!checkOrder()) return; this.onclick=''; saveOrder('order_confirm');
+(2)改为可以使用余额
+在“其他信息”的“使用积分”前增加一行：
+<!-- {if $smarty.session.user_id > 0 && $config.use_surplus} 是否使用余额 -->
+<tr>
+  <td><strong>{$lang.use_surplus}：</strong></td>
+  <td><input name="surplus" type="text" size="10" value="{$order.surplus|default:0}" onblur="changeSurplus(this.value)" />
+            {$lang.your_surplus}{$your_surplus|default:0}</td>
+</tr>
+<!-- {/if} 是否使用余额 -->
+
+把：
+<!-- {if $config.use_integral or $config.use_bonus} 是否使用积分或红包 -->
+改为：
+<!-- {if $config.use_surplus or $config.use_integral or $config.use_bonus} 是否使用余额或积分或红包 -->
+
+在“费用总计”的“使用积分”前增加：
+<!-- {if $smarty.session.user_id > 0 and $config.use_surplus} 是否使用余额 -->
+ - {$lang.use_surplus}：<span id="surplus_money">0</span>
+<!-- {/if} 是否使用余额 -->
+
+
+
+修改 register_login.lbi
+(1)增加是否可以匿名购物的设置
+<input name="buy" type="button" id="buy" value="{$lang.direct_shopping}" 
+改为
+<!-- {if $anonymous_buy eq 1} 是否允许未登录用户购物 -->
+<input name="buy" type="button" id="buy" value="{$lang.direct_shopping}" onclick="planNotLogin()" >
+<!-- {/if} -->
+(2)调整注册时填的字段的顺序，跟首页注册顺序一致
+把email放到用户名之后（第二个）
+
+
+修改 order_view.lbi
+(1)在“商品列表”右侧增加链接
+<span class="modify"><a href="javascript:;" onclick="returnToCart({$order.order_id})">{$lang.return_to_cart}</a></span>
+
+
+修改 article.dwt
+增加“相关商品”的显示，在
+<script type="text/javascript" src="library/includes/common.js"></script>
+之后增加
+<div class="title-div"><img src="images/article_goods.gif" alt="Article Goods" width="158" height="39" /></div>
+<div class="content-div">
+<ul class="article-list">
+{foreach from=$goods_list item=goods}
+<li><a href="goods.php?id={$goods.goods_id}">{$goods.goods_name}</a></li>
+{/foreach}
+</ul>
+</div>
+
+
+修改 article_info.lbi
+(1)文章内容
+把
+<div>{$article.content}</div>
+改为
+<!-- {if $article.content } --><div>{$article.content}</div><!-- {/if} -->
+{if $article.open_type eq 2}<br /><div><A href="{$article.file_url}">{$lang.relative_file}</A></div>{/if}
+
+
+修改 cart_view.lbi
+(1)赠品类型金额上限为0，表示无上限
+{$lang.cart_money_amongst} {$gift_type.min_amount} {$lang.and} 
+改为
+<!-- {if $gift_type.max_amount neq 0} -->
+{$lang.cart_money_amongst} {$gift_type.min_amount} {$lang.and} {$gift_type.max_amount} {$lang.select_gift} {$gift_type.max_count} {$lang.ge}。<br />
+<!-- {else} -->
+{$lang.cart_money_exceed} {$gift_type.min_amount}，{$lang.select_gift1} {$gift_type.max_count} {$lang.ge}。<br />
+<!-- {/if} -->
+
+
+修改 goods.dwt
+(1)增加相关文章
+
+
+修改 order_confirm.lbi
+(1)改变积分换算比例和积分支付比例的含义
+把
+{$order.integral}
+改为
+{$order.integral_money}
+
+
+增加收回确认页面 receive.dwt
+
+
+
+22:27 2006-11-5
+修改 goods.dwt
+在
+{foreach from=$lang.js_languages key=key item=item}
+var {$key} = "{$item}";
+{/foreach}
+后增加
+var goodsattr_style = {$cfg.goodsattr_style};
+
+2006-11-5 22：38 
+删除payment.lbi, shipping.lbi
+pages.lbi 增加页面跳转的下拉列表
+
+
+11:46 2006-11-6
+goods.dwt
+在
+{foreach from=$lang.js_languages key=key item=item}
+var {$key} = "{$item}";
+{/foreach}
+之后加上
+var integralScale = {$integral_scale};
+var currencyFormat = "{$currency_format}";
+
+
+11:47 2006-11-6
+昨天晚上跟你说的收货人页面 consignee.lbi

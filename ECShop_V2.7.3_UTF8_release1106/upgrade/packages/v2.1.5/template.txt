@@ -1,0 +1,295 @@
+v2.1.3 模板修改记录
+===============================================================================
+文件： group_buy.lbi
+日期： 2007-1-15
+描述： 修改语言项以有链接URL
+
+第13行：
+    <br />{$lowest_price_buy}<span class="goods-price">{$goods.last_price}</span></td>
+修改为
+    <br />{$lang.lowest_price_buy}<span class="goods-price">{$goods.last_price}</span></td>
+第8和12行：
+    <A href="group_buy.php?act=view&bid={$goods.group_buy_id}&id={$goods.goods_id}">
+修改为
+    <A href="group_buy.php?act=view&id={$goods.group_buy_id}">
+
+-------------------------------------------------------------------------------
+文件： group_buy_info.lbi
+日期： 2007-1-15
+描述： 修改变量名
+
+第8-9行：
+    <! -- {if $restrict_amount > 0 && $sign_amount >= $restrict_amount} -->
+    <br /><div align="center">[{$lang.lowest_price}]</div>
+改为：
+    <!-- {if $goods.lowest_price} -->
+    <br /><div align="center">[{$goods.lowest_price}]</div>
+
+第45行：{$end_utc_time|default:0}  改为:{$goods.end_utc_time|default:0}
+	  
+第68行：{$sign_amount}  修改为:{$goods.sign_amount}
+
+-------------------------------------------------------------------------------
+文件： group_buy_goods_attr.lbi
+日期： 2007-1-15
+描述： 修改变量名
+
+第13-17行：删除这个地方的判断
+
+第18行改为：<!-- {if $goods.is_buy eq "ok"} -->
+	  
+第25行：{$cur_price}  修改为:{$goods.cur_price}
+-------------------------------------------------------------------------------
+文件： group_buy_search_list.lbi
+日期： 2007-1-15
+描述： 修改链接地址
+
+第11和23行：<A href="group_buy.php?act=view&bid={$goods.group_buy_id}&id={$goods.goods_id}">
+改为：<A href="group_buy.php?act=view&id={$goods.group_buy_id}">
+
+第47行：去掉，第48行：{$goods.goods_id} 改为:{$goods.group_buy_id}
+
+-------------------------------------------------------------------------------
+文件： group_buy_order_detail.dwt
+日期： 2007-1-15
+描述： 修改链接地址
+
+第99行改为：<a href="group_buy.php?act=view&id={$group_buy_id}" target="_blank">
+第174行的判断改为：<!-- {if $can_invoice eq 1}
+
+支付方式列表(大约第167行) 加上一列：<th width="15%">{$lang.pay_fee}</th>
+下一个<tr>相应加上：<td align="right">{$payment.format_pay_fee}</td>
+-------------------------------------------------------------------------------
+文件： group_buy_order_confirm.dwt
+日期： 2007-1-16
+描述： 修改变量名
+
+第89行：{$sign_amount} 改为：{$goods.sign_amount}
+第90行：{$order_sn} 改为：{$order.order_sn}
+第105行：{$goods_name} 改为：{$goods.goods_name}；
+第108-109行改为：<td>{$order.integral_amount}</td>
+                 <td>{$total_price2}</td>
+第141行{$pay_notic} 改为：{$order.pay_notic}
+第144-146行的{$pay_online} 改为：{$order.pay_online}
+第155行：{$shipping_name} 改为：{$order.shipping_name}
+第163-170 改为：
+      <!-- {if $order.inv_payee && $order.inv_content} 能否开发票 -->
+      <tr>
+        <td>{$lang.invoice_title}：</td>
+        <td>{$order.inv_payee}</td>
+        <td>{$lang.invoice_content}：</td>
+        <td>{$order.inv_content}</td>
+      </tr>
+      <!-- {/if} 能否开发票 -->
+第173行：{$postscript} 改为：{$order.postscript}
+
+-------------------------------------------------------------------------------
+文件： group_buy_search_list.dwt
+日期： 2007-1-15
+描述： 增加模块
+
+在左侧增加了商品分类模块
+
+-------------------------------------------------------------------------------
+
+
+文件：order_detail.lbi
+日期：2007-1-16
+描述：在订单详情页面增加配送保价和支付手续费
+详细描述：
+
+70行配送列表由原来：
+<table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" id="shippingTable">
+  <tr>
+    <th width="5%">&nbsp;</th>
+    <th width="25%">{$lang.name}</th>
+    <th>{$lang.describe}</th>
+    <th width="15%">{$lang.fee}</th>
+  <th width="15%">{$lang.free_money}</th>
+  </tr>
+
+  <!-- {foreach from=$shipping_list item=shipping} 循环配送方式 -->
+  <tr>
+    <td>
+      <input name="shipping" type="radio" value="{$shipping.shipping_id}" {if $shipping_id eq $shipping.shipping_id}checked{/if} onclick="changeShipping(this.value)" />
+      <input name="shipping_{$shipping.shipping_id}" type="hidden" value="{$shipping.shipping_fee}" />
+    </td>
+    <td>{$shipping.shipping_name}</td>
+    <td>{$shipping.shipping_desc}</td>
+    <td><div align="right">{$shipping.format_shipping_fee}</div></td>
+  <td><div align="right">{$shipping.free_money}</div></td>
+  </tr>
+      <!-- {/foreach} 循环配送方式 -->
+</table>
+改为：
+<table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" id="shippingTable">
+  <tr>
+    <th width="5%">&nbsp;</th>
+    <th width="25%">{$lang.name}</th>
+    <th>{$lang.describe}</th>
+    <th width="15%">{$lang.fee}</th>
+  <th width="15%">{$lang.free_money}</th>
+  </tr>
+
+  <!-- {foreach from=$shipping_list item=shipping} 循环配送方式 -->
+  <tr>
+    <td>
+      <input name="shipping" type="radio" value="{$shipping.shipping_id}" {if $shipping_id eq $shipping.shipping_id}checked{/if} onclick="changeShipping(this.value)" />
+      <input name="shipping_{$shipping.shipping_id}" type="hidden" value="{$shipping.shipping_fee}" />
+      <input name="insure_{$shipping.shipping_id}" type="hidden" value="{$shipping.insure_fee}" />
+      <input name="cod_fee_{$shipping.shipping_id}" type="hidden" value="{$shipping.pay_fee}" />
+      <input name="format_cod_fee_{$shipping.shipping_id}" type="hidden" value="{$shipping.format_pay_fee}" />
+    </td>
+    <td>{$shipping.shipping_name}</td>
+    <td>{$shipping.shipping_desc}</td>
+    <td><div align="right">{$shipping.format_shipping_fee}</div></td>
+  <td><div align="right">{$shipping.free_money}</div></td>
+  </tr>
+      <!-- {/foreach} 循环配送方式 -->
+  <tr id="ecs_insure_cell"  style="display:none">
+    <td>&nbsp;</td><td><input name="need_insure" type="checkbox"  onClick="calculateOrderFee()" />{$lang.need_insure}</td>
+    <td colspan="3">{$lang.insure_fee}：<span id="ecs_insure_fee_cell">0</span></td>
+  </tr>
+</table>
+
+支付列表由原来
+<table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" id="paymentTable">
+  <tr>
+    <th width="5%">&nbsp;</th>
+    <th width="20%">{$lang.name}</th>
+    <th>{$lang.describe}</th>
+  </tr>
+
+  <!-- {foreach from=$payment_list item=payment} 循环支付方式 -->
+  <tr>
+    <td><input type="radio" name="payment" value="{$payment.pay_id}" {if $pay_id eq $payment.pay_id}checked{/if} onclick="changePayment(this.value)" />
+	<input name="pay_{$payment.pay_id}" type="hidden" value="{$payment.pay_fee}" /></td>
+    <td>{$payment.pay_name}</td>
+    <td>{$payment.pay_desc}</td>
+  </tr>
+  <!-- {/foreach} 循环支付方式 -->
+</table>
+改为
+<table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" id="paymentTable">
+  <tr>
+    <th width="5%">&nbsp;</th>
+    <th width="20%">{$lang.name}</th>
+    <th>{$lang.describe}</th>
+    <th width="15%">{$lang.pay_fee}</th>
+  </tr>
+
+  <!-- {foreach from=$payment_list item=payment} 循环支付方式 -->
+  <tr>
+    <td><input type="radio" name="payment" value="{$payment.pay_id}" {if $pay_id eq $payment.pay_id}checked{/if} onclick="changePayment(this.value)" />
+	<input name="pay_{$payment.pay_id}" type="hidden" value="{$payment.pay_fee}" /></td>
+    <td>{$payment.pay_name}</td>
+    <td>{$payment.pay_desc}</td>
+    <td align="right">{$payment.format_pay_fee}</td>
+  </tr>
+  <!-- {/foreach} 循环支付方式 -->
+</table>
+
+
+费用计算由原来
+<tr>
+<td align="right">{$lang.goods_all_price}:<span id="goods_amount">0</span>
++ {$lang.shipping_fee}: <span id="shipping_fee">0</span>
+<!-- {if $pack_list} 是否有包装 -->
++ {$lang.pack_fee}: <span id="pack_fee">0</span>
+<!-- {/if} 是否有包装 -->
+<!-- {if $card_list} 是否有贺卡 -->
++ {$lang.card_fee}: <span id="card_fee">0</span>
+<!-- {/if} 是否有贺卡 -->
+</td>
+</tr>
+改为
+<tr>
+<td align="right">{$lang.goods_all_price}:<span id="goods_amount">0</span>
++ {$lang.shipping_fee}: <span id="shipping_fee">0</span>
++ {$lang.insure_fee}: <span id="insure_fee">0</span>
++ {$lang.pay_fee}: <span id="pay_fee">0</span>
+<!-- {if $pack_list} 是否有包装 -->
++ {$lang.pack_fee}: <span id="pack_fee">0</span>
+<!-- {/if} 是否有包装 -->
+<!-- {if $card_list} 是否有贺卡 -->
++ {$lang.card_fee}: <span id="card_fee">0</span>
+<!-- {/if} 是否有贺卡 -->
+</td>
+</tr>
+--------------------------------------------------------------------------------------------------
+
+文件：order_confirm.lib
+描述：在订单详情页面加入支付费用和保价费用
+详细信息：
+
+在其他信息中，由原来
+<tr>
+<td>{$lang.payment}:</td>
+<td colspan="3">{$order.pay_name}
+<div align="right"></div></td>
+</tr>
+改为：
+<tr>
+<td>{$lang.payment}:</td>
+<td>{$order.pay_name}</td>
+	<td>{$lang.pay_fee}</td>
+<td><div align="right">{$order.pay_fee}</div></td>
+</tr>
+  <!--{if $order.insure_fee}-->
+<tr>
+<td>{$lang.insure_fee}:</td>
+<td colspan="3"><div align="right">{$order.insure_fee}</div></td>
+</tr>
+  <!--{/if}-->
+
+---------------------------------------------------------------------------------------
+文件：order_view
+描述：在订单详情页面加入支付费用和保价费用
+详细信息：
+
+在其他信息中，由原来
+<tr>
+<td>{$lang.payment}:</td>
+<td colspan="3">{$order.pay_name}
+<div align="right"></div></td>
+</tr>
+改为：
+<tr>
+<td>{$lang.payment}:</td>
+<td>{$order.pay_name}</td>
+	<td>{$lang.pay_fee}</td>
+<td><div align="right">{$order.pay_fee}</div></td>
+</tr>
+  <!--{if $order.insure_fee}-->
+<tr>
+<td>{$lang.insure_fee}:</td>
+<td colspan="3"><div align="right">{$order.insure_fee}</div></td>
+</tr>
+  <!--{/if}-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

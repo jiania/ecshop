@@ -1,0 +1,20 @@
+v2.1.2a 模板修改记录
+===============================================================================
+文件： pages.lbi
+日期： 2006-12-21
+描述： 修正URL重写后，选择页数会出现category-1.html?cat=1这样的问题
+
+第2行：
+<form name="selectPageForm">
+修改为
+<form name="selectPageForm" action="{$smarty.server.PHP_SELF}" method="POST">
+
+-------------------------------------------------------------------------------
+文件： gallery.lbi
+日期： 2006-12-21
+描述： 修改翻页的连接
+
+第17行：
+<div align="center" style="border-bottom: 1px solid #dadada; padding-bottom: 5px"><input type="button" onclick="location.href='gallery.php?id={$gallery.goods_id}&amp;img={$gallery.img_id}&amp;direction=prev'" value="&lt;"> <input type="button" onclick="location.href='gallery.php?id={$gallery.goods_id}&amp;img={$gallery.img_id}&amp;direction=next'" value="&gt;"></div>
+替换为：
+<div align="center" style="border-bottom: 1px solid #dadada; padding-bottom: 5px"><input type="button" onclick="location.href='gallery.php?id={$gallery.goods_id}&amp;img={$prev_img}'" value="&lt;"> <input type="button" onclick="location.href='gallery.php?id={$gallery.goods_id}&amp;img={$next_img}'" value="&gt;"></div>
